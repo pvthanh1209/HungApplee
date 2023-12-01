@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using HungApple.Data;
 using HungApple.Models;
 using HungApple.Infrastructure;
+using HungApple.Models.ViewModels;
 
 namespace HungApple.Controllers
 {
@@ -26,7 +27,7 @@ namespace HungApple.Controllers
         //    return View();
         //}
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaymentModel? cart)
         {
             ViewDefault();
             var userDetail = new User();
@@ -36,10 +37,20 @@ namespace HungApple.Controllers
                 int userId = (users != null ? int.Parse(users.ValueType) : 0);
                 userDetail = _context.User.Find(userId);
             }
+            var model = new CartLine();
+            if(cart != null)
+            {
+                var product = _context.Product.Find(cart.ProductId);
+                if(product != null)
+                {
+                    model.Product = product;
+                    model.Quantity = cart.Quantity;
+                }
+            }
             ViewBag.UserDetail = userDetail;
             ViewBag.Payment = _context.Delivery.ToList();
             ///var hungAppleContext = _context.Order.Include(o => o.Delivery).Include(o => o.Districts).Include(o => o.Provinces).Include(o => o.User).Include(o => o.Wards);
-            return View(HttpContext.Session.GetJson<Cart>("Payment"));
+            return View(model);
         }
         public void ViewDefault()
         {

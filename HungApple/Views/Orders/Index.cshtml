@@ -1,4 +1,4 @@
-﻿@model HungApple.Models.Cart
+﻿@model HungApple.Models.CartLine
 @using HungApple.Models
 @{
     ViewData["Title"] = "Thanh toán";
@@ -100,26 +100,26 @@
             <div><strong>SẢN PHẨM</strong></div>
             <div><strong>TỔNG GIÁ</strong></div>
         </div>
-        @if (Model?.Lines != null)
+        @if (Model != null && Model.Product.Id > 0 && Model.Quantity > 0)
         {
-            @foreach (var line in Model?.Lines)
-            {
-                <div class="order-products">
-                    <div class="order-col">
-                        <div>@line.Quantity @line.Product.Name màu @line.Product.Color</div>
-                        <div>@(line.Product.Price - line.Product.PriceDiscount) VND</div>
-                    </div>
+            var line = Model;          
+            <div class="order-products">
+                <div class="order-col">
+                    <div>@line.Quantity @line.Product.Name màu @line.Product.Color</div>
+                    <div>@(line.Product.Price - line.Product.PriceDiscount) VND</div>
                 </div>
-            }
+            </div>
             <div class="order-col">
                 <div>Phí vận chuyển</div>
                 <div><strong>30000 VND</strong></div>
             </div>
             <div class="order-col">
                 <div><strong>Tổng cộng</strong></div>
-                <div><strong class="order-total">@(Model?.ComputeTotalValue() + 30000) VND</strong></div>
+                <div><strong class="order-total">  @((line.Product.Price * line.Quantity) - (line.Quantity * line.Product.PriceDiscount) + 30000) VND</strong></div>
             </div>
-        }else{
+        }
+        else
+        {
             @await Component.InvokeAsync("CartOrder")
         }
     </div>
