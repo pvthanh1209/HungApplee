@@ -1,0 +1,32 @@
+﻿@model HungApple.Models.NewsLetterSubscription
+
+@{
+    ViewData["Title"] = "SubscriceDelete";
+    Layout = "~/Views/Shared/_AdminPanel.cshtml";
+}
+
+<h3><strong>XÓA BÌNH LUẬN</strong></h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Email
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class="col-sm-2">
+            Ngày tạo
+        </dt>
+        <dd class="col-sm-10">
+           @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+        </dd>
+       
+    </dl>
+
+    <form asp-action="Unsubscribe" id="deleteForm">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Xác nhận xóa" class="w3-button w3-blue w3-round" />
+        <a asp-action="Admin" class="w3-button w3-blue w3-round" style="text-decoration:none;">Trở về</a>
+    </form>
+</div>

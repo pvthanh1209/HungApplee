@@ -1,0 +1,86 @@
+﻿@model HungApple.Models.Discount
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "_AdminPanel";
+}
+
+<h1><strong>CHỈNH SỬA</strong></h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="DiscountsEdit" onsubmit="editForm(event)" id="editForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Code" class="control-label"></label>
+                <input asp-for="Code" class="form-control" />
+                <span asp-validation-for="Code" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartDate" class="control-label"></label>
+                <input asp-for="StartDate" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndDate" class="control-label"></label>
+                <input asp-for="EndDate" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Lưu" class="w3-button w3-blue w3-round" />
+                <a asp-action="DiscountsIndex" class="w3-button w3-blue w3-round" style="text-decoration:none;">Trở về</a>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function editForm(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: "Bạn có muốn lưu những thay đổi?",
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: "Lưu",
+                denyButtonText: `Hủy`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const editForm = document.getElementById('editForm');
+                    editForm.submit();
+                    Swal.fire({
+                        title: "Đã lưu!",
+                        icon: "success",
+                        showConfirmButton: false
+                    });
+                } else if (result.isDenied) {
+                    Swal.fire({
+                        title: "Đã hủy!",
+                        icon: "error",
+                        showConfirmButton: false
+                    });
+                    setTimeout(function () {
+                        window.location.href = '/Admin/DiscountsIndex';
+                    }, 1500);
+                }
+            });
+        }
+    </script>
+}

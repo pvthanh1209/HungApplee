@@ -1,0 +1,48 @@
+﻿@model HungApple.Models.Discount
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "_AdminPanel";
+}
+
+<h1><strong>CHI TIẾT GIẢM GIÁ</strong></h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Amount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Amount)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Code)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Code)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.StartDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.StartDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.EndDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.EndDate)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="DiscountsEdit" asp-route-id="@Model?.Id" class="w3-button w3-blue w3-round" style="text-decoration:none;">Chỉnh sửa</a> 
+    <a asp-action="DiscountsIndex" class="w3-button w3-blue w3-round" style="text-decoration:none;">Trở về</a>
+</div>
