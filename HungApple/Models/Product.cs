@@ -50,11 +50,6 @@ namespace HungApple.Models
         [System.ComponentModel.DisplayName("Loại sản phẩm")]
         public virtual Category? Category { get; set; }
 
-		[ForeignKey("Discount")]
-		public int DiscountId { get; set; }
-
-        [System.ComponentModel.DisplayName("Chương trình giảm giá")]
-        public virtual Discount? Discount { get; set; }
         [System.ComponentModel.DisplayName("Sản phẩm được giảm giá")]
         public bool IsSale { get; set; }
 

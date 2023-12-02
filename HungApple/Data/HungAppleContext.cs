@@ -18,8 +18,6 @@ namespace HungApple.Data
 
         public DbSet<HungApple.Models.Contact>? Contact { get; set; }
 
-        public DbSet<HungApple.Models.Discount>? Discount { get; set; }
-
         public DbSet<HungApple.Models.Product>? Product { get; set; }
 
         public DbSet<HungApple.Models.User>? User { get; set; }

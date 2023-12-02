@@ -23,6 +23,28 @@
 <div class="row">
     <div id="aside" class="col-md-3">
         @await Component.InvokeAsync("Sidebar")
+        @if (Model != null && Model.Product.Count() > 0)
+        {
+            <div style="margin-top:35px;">
+                <h3 class="aside-title">Sản phẩm bán chạy</h3>
+                @foreach (var item in Model.Product)
+                {
+                    if (item.IsBestSeller)
+                    {
+                        <div class="product-widget">
+                            <div class="product-img">
+                                <img src="/Upload/Product/@item.Image" alt="">
+                            </div>
+                            <div class="product-body">
+                                <p class="product-category">@item.Category.Name</p>
+                                <h3 class="product-name"><a asp-controller="Products" asp-action="Details" asp-route-id="@item.Id">@item.Name</a></h3>
+                                <h4 class="product-price">@item.Price <del class="product-old-price">@item.PriceDiscount</del></h4>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
     </div>
     <div id="store" class="col-md-9">
         @if (Model != null && Model.Product.Count() > 0)
@@ -45,7 +67,7 @@
                                 <p class="product-category">@product.Category.Name</p>
                                 <h3 class="product-name"><a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h3>
                                 <h4 class="product-price">@(product.Price - product.PriceDiscount)<del class="product-old-price">@product.Price</del></h4>
-                                
+
                             </div>
                             <div class="add-to-cart">
                                 <form action="/Cart/AddToCart" method="post">
@@ -70,7 +92,7 @@
                                 <p class="product-category">@product.Category.Name</p>
                                 <h3 class="product-name"><a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h3>
                                 <h4 class="product-price">@(product.Price - product.PriceDiscount)<del class="product-old-price">@product.Price</del></h4>
-                                
+
                             </div>
                             <div class="add-to-cart">
                                 <form action="/Cart/AddToCart" method="post">
@@ -95,7 +117,7 @@
                                 <p class="product-category">@product.Category.Name</p>
                                 <h3 class="product-name"><a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h3>
                                 <h4 class="product-price">@product.Price</h4>
-                                
+
                             </div>
                             <div class="add-to-cart">
                                 <form action="/Cart/AddToCart" method="post">
@@ -117,7 +139,7 @@
                                 <p class="product-category">@product.Category.Name</p>
                                 <h3 class="product-name"><a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h3>
                                 <h4 class="product-price">@product.Price</h4>
-                                
+
                             </div>
                             <div class="add-to-cart">
                                 <form action="/Cart/AddToCart" method="post">
@@ -135,24 +157,33 @@
     </div>
     <div class="store-filter clearfix">
         <ul class="store-pagination">
+            @{
+                var _url = ViewContext.HttpContext.Request.QueryString.Value;
+                var pageProduct = ViewContext.HttpContext.Request.Query["productPage"].ToString();
+                if (!string.IsNullOrEmpty(pageProduct))
+                {
+                    _url = _url.Replace("&productPage=" + pageProduct.ToString(), string.Empty);
+                }
+            }
             @if (Model.PagingInfo.CurrentPage > 1)
             {
-                <li><a href="/Products/?productPage=@(Model.PagingInfo.CurrentPage - 1)"><i class="fa fa-angle-left"></i></a></li>
+
+                <li><a href="/Products/Filter@_url&productPage=@(Model.PagingInfo.CurrentPage - 1)"><i class="fa fa-angle-left"></i></a></li>
             }
             @for (int i = 1; i <= Model.PagingInfo.TotalPages; i++)
             {
                 @if (i == Model.PagingInfo.CurrentPage)
                 {
-                    <li class="active"><a href="/Products/?productPage=@i">@i</a></li>
+                    <li class="active"><a href="/Products/Filter@_url&productPage=@i">@i</a></li>
                 }
                 else
                 {
-                    <li><a href="/Products/?productPage=@i">@i</a></li>
+                    <li><a href="/Products/Filter@_url&productPage=@i">@i</a></li>
                 }
             }
             @if (Model.PagingInfo.CurrentPage != Model.PagingInfo.TotalPages)
             {
-                <li><a href="/Products/?productPage=@(Model.PagingInfo.CurrentPage + 1)"><i class="fa fa-angle-right"></i></a></li>
+                <li><a href="/Products/Filter@_url&productPage=@(Model.PagingInfo.CurrentPage + 1)"><i class="fa fa-angle-right"></i></a></li>
             }
         </ul>
     </div>

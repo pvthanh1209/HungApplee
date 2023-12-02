@@ -3,8 +3,8 @@
 @{
     var maxPrice = ViewBag.MaxPrice;
     var minPrice = ViewBag.MinPrice;
-   // var minPriceFilter = (decimal)ViewBag.MinPriceFilter;
-   // var maxPriceFilter = (decimal)ViewBag.MaxPriceFilter;
+    // var minPriceFilter = (decimal)ViewBag.MinPriceFilter;
+    // var maxPriceFilter = (decimal)ViewBag.MaxPriceFilter;
     var _context = Context;
     var controller = ViewContext.RouteData.Values["Controller"].ToString().ToLower();
     var action = ViewContext.RouteData.Values["action"].ToString().ToLower();
@@ -14,14 +14,27 @@
     {
         param = qsPath.Replace("?category=", "");
     }
+    var cate = (string)ViewBag.Cate;
     var clActiveHome = (controller.Equals("home") ? "active" : "");
     var clActivePr = ((string.IsNullOrEmpty(param) && controller.Equals("products")) ? "active" : "");
 }
 <form action="/Products/Filter" method="get">
-    <div class="aside" >
+    <div class="aside">
         <h3 class="aside-title">Danh mục</h3>
         @foreach (var item in Model)
         {
+            bool isCkecked = false;
+            if (!string.IsNullOrEmpty(cate))
+            {
+                var lstCate = cate.Split(",");
+                var ckCate = lstCate.Where(x => x.Equals(item.Name.Trim())).FirstOrDefault();
+                if (ckCate != null)
+                {
+                    isCkecked = true;
+                }else{
+                    isCkecked = false;
+                }
+            }
             var classActive = string.Empty;
             if (!string.IsNullOrEmpty(param))
             {
@@ -34,7 +47,12 @@
             int productQuantity = _context.Product.Where(x => x.CategoryId == item.Id).Sum(x => x.Quantity);
             <div class="checkbox-filter">
                 <div class="input-checkbox">
-                    <input type="checkbox" class="menu-tab @classActive" id="category-@item.Name" name="category" value="@item.Name">
+                    @if (isCkecked)
+                    {
+                        <input type="checkbox" class="menu-tab @classActive" checked id="category-@item.Name" name="category" value="@item.Name">
+                    }else{
+                        <input type="checkbox" class="menu-tab @classActive" id="category-@item.Name" name="category" value="@item.Name">
+                    }
                     <label class="menu-tab @classActive" for="category-@item.Name">
                         <span class="menu-tab @classActive"></span>
                         @item.Name

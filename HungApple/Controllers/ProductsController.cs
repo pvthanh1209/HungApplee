@@ -27,7 +27,7 @@ namespace HungApple.Controllers
         // GET: Products
         public async Task<IActionResult> Index(int productPage = 1)
         {
-			IQueryable<Product> query = _context.Product.Include(p => p.Category).Include(p => p.Discount);
+			IQueryable<Product> query = _context.Product.Include(p => p.Category);
 			decimal minPrice = 1;
 			decimal maxPrice = 9999999;
 			if (query.Count() > 0)
@@ -71,13 +71,13 @@ namespace HungApple.Controllers
 
         public async Task<IActionResult> Index1()
         {
-			IEnumerable<Product> products = _context.Product.Include(p => p.Category).Include(p => p.Discount); // Lấy danh sách sản phẩm
+			IEnumerable<Product> products = _context.Product.Include(p => p.Category); // Lấy danh sách sản phẩm
 			return View(products);
 		}
 		public IActionResult Viewbestsell() //hiển thị danh sách bestseller
 		{
 			// Giả sử bạn lấy danh sách các sản phẩm bán chạy từ database
-			IEnumerable<Product> topSellingProducts = _context.Product.Include(p => p.Category).Include(p => p.Discount).Include(p => p.IsBestSeller);
+			IEnumerable<Product> topSellingProducts = _context.Product.Include(p => p.Category).Include(p => p.IsBestSeller);
 			// Lưu danh sách vào ViewBag để sử dụng trong view
 			ViewBag.TopSellingProducts = topSellingProducts;
 			return View();
@@ -93,7 +93,6 @@ namespace HungApple.Controllers
 
             var product = await _context.Product
                 .Include(p => p.Category)
-                .Include(p => p.Discount)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -133,7 +132,9 @@ namespace HungApple.Controllers
 
 		public async Task<IActionResult> Filter(string category, decimal? priceMin, decimal? priceMax, int productPage = 1)
 		{
-			IQueryable<Product> query = _context.Product.Include(p => p.Category).Include(p => p.Discount);
+            var stringCate = Request.Query["category"].ToString();
+            ViewBag.Cate = stringCate; 
+            IQueryable<Product> query = _context.Product.Include(p => p.Category);
             decimal minPrice = 1;
             decimal maxPrice = 9999999;
             if(query.Count() > 0)
@@ -146,19 +147,20 @@ namespace HungApple.Controllers
             //ViewBag.MaxPriceFilter = (priceMax == null ? maxPrice : priceMax);
             //ViewBag.MinPriceFilter = (priceMin == null ? minPrice : priceMin);
             var model = new ProductListViewModel();
-            if (!string.IsNullOrEmpty(category))
+            if (!string.IsNullOrEmpty(stringCate))
 			{
-				query = query.Where(p => p.Category.Name == category).Skip((productPage - 1) * PageSize).Take(PageSize);
+				query = query.Where(p => stringCate.Contains(p.Category.Name));
 			}
-			if (priceMin.HasValue)
-			{
-				query = query.Where(p => p.Price >= priceMin.Value).Skip((productPage - 1) * PageSize).Take(PageSize);
-			}
+            if (priceMin.HasValue)
+            {
+                query = query.Where(p => p.Price >= priceMin.Value);
+            }
 
-			if (priceMax.HasValue)
-			{
-				query = query.Where(p => p.Price <= priceMax.Value).Skip((productPage - 1) * PageSize).Take(PageSize);
-			}
+            if (priceMax.HasValue)
+            {
+                query = query.Where(p => p.Price <= priceMax.Value);
+            }
+            query = query.Skip((productPage - 1) * PageSize).Take(PageSize);
             var PagingInfo = new PagingInfo
             {
                 ItemsPerPage = PageSize,
@@ -175,7 +177,6 @@ namespace HungApple.Controllers
         public IActionResult Create()
         {
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name");
-            ViewData["DiscountId"] = new SelectList(_context.Discount, "Id", "Name");
             return View();
         }
 
@@ -194,7 +195,6 @@ namespace HungApple.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name", product.CategoryId);
-            ViewData["DiscountId"] = new SelectList(_context.Discount, "Id", "Name", product.DiscountId);
             return View(product);
         }
 
@@ -213,7 +213,6 @@ namespace HungApple.Controllers
                 return NotFound();
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name", product.CategoryId);
-            ViewData["DiscountId"] = new SelectList(_context.Discount, "Id", "Name", product.DiscountId);
             return View(product);
         }
 
@@ -251,7 +250,6 @@ namespace HungApple.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name", product.CategoryId);
-            ViewData["DiscountId"] = new SelectList(_context.Discount, "Id", "Name", product.DiscountId);
             return View(product);
         }
 
@@ -266,7 +264,6 @@ namespace HungApple.Controllers
 
             var product = await _context.Product
                 .Include(p => p.Category)
-                .Include(p => p.Discount)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {

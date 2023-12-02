@@ -17,7 +17,7 @@ namespace HungApple.Controllers
 
 		public IActionResult Index()
         {
-            return View(_context.Product.Include(p => p.Category).Include(p => p.Discount).ToList());
+            return View(_context.Product.Include(p => p.Category).ToList());
         }
 
         public IActionResult Privacy()

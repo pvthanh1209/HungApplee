@@ -171,158 +171,12 @@ namespace HungApple.Controllers
         }
         //End Categories
 
-        //Start Discounts
-        // GET: Discounts
-        public async Task<IActionResult> DiscountsIndex()
-        {
-            return _context.Discount != null ?
-                        View(await _context.Discount.ToListAsync()) :
-                        Problem("Entity set 'HungAppleContext.Discount'  is null.");
-        }
-
-        // GET: Discounts/Details/5
-        public async Task<IActionResult> DiscountsDetails(int? id)
-        {
-            if (id == null || _context.Discount == null)
-            {
-                return NotFound();
-            }
-
-            var discount = await _context.Discount
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (discount == null)
-            {
-                return NotFound();
-            }
-
-            return View(discount);
-        }
-
-        // GET: Discounts/Create
-        public IActionResult DiscountsCreate()
-        {
-            return View();
-        }
-
-        // POST: Discounts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DiscountsCreate([Bind("Id,Name,Amount,Code,StartDate,EndDate")] Discount discount)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(discount);
-                await _context.SaveChangesAsync();
-                await Task.Delay(1500);
-                return RedirectToAction(nameof(DiscountsIndex));
-            }
-            return View(discount);
-        }
-
-        // GET: Discounts/Edit/5
-        public async Task<IActionResult> DiscountsEdit(int? id)
-        {
-            if (id == null || _context.Discount == null)
-            {
-                return NotFound();
-            }
-
-            var discount = await _context.Discount.FindAsync(id);
-            if (discount == null)
-            {
-                return NotFound();
-            }
-            return View(discount);
-        }
-
-        // POST: Discounts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DiscountsEdit(int id, [Bind("Id,Name,Amount,Code,StartDate,EndDate")] Discount discount)
-        {
-            if (id != discount.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(discount);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DiscountExists(discount.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                await Task.Delay(1500);
-                return RedirectToAction(nameof(DiscountsIndex));
-            }
-            return View(discount);
-        }
-
-        // GET: Discounts/Delete/5
-        public async Task<IActionResult> DiscountsDelete(int? id)
-        {
-            if (id == null || _context.Discount == null)
-            {
-                return NotFound();
-            }
-
-            var discount = await _context.Discount
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (discount == null)
-            {
-                return NotFound();
-            }
-
-            return View(discount);
-        }
-
-        // POST: Discounts/Delete/5
-        [HttpPost, ActionName("DiscountsDelete")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> DiscountsDeleteConfirmed(int id)
-        {
-            if (_context.Discount == null)
-            {
-                return Problem("Entity set 'HungAppleContext.Discount'  is null.");
-            }
-            var discount = await _context.Discount.FindAsync(id);
-            if (discount != null)
-            {
-                _context.Discount.Remove(discount);
-            }
-
-            await _context.SaveChangesAsync();
-            await Task.Delay(1500);
-            return RedirectToAction(nameof(DiscountsIndex));
-        }
-
-        private bool DiscountExists(int id)
-        {
-            return (_context.Discount?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-        //End Discounts
 
         //Start Products
         // GET: Products
         public async Task<IActionResult> ProductsIndex(int pageNumber = 1)
         {
-            var hungAppleContext = _context.Product.Include(p => p.Category).Include(p => p.Discount);
+            var hungAppleContext = _context.Product.Include(p => p.Category);
             var pageSize = 10; // Cập nhật kích thước trang là 10
             var total = hungAppleContext.Count();
             ViewBag.total = total;
@@ -350,7 +204,6 @@ namespace HungApple.Controllers
 
             var product = await _context.Product
                 .Include(p => p.Category)
-                .Include(p => p.Discount)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -364,7 +217,6 @@ namespace HungApple.Controllers
         public IActionResult ProductsCreate()
         {
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name");
-            ViewData["DiscountId"] = new SelectList(_context.Discount, "Id", "Name");
             return View();
         }
 
@@ -403,7 +255,6 @@ namespace HungApple.Controllers
                 return RedirectToAction(nameof(ProductsIndex));
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name", product.CategoryId);
-            ViewData["DiscountId"] = new SelectList(_context.Discount, "Id", "Name", product.DiscountId);
             return View(product);
         }
 
@@ -421,7 +272,6 @@ namespace HungApple.Controllers
                 return NotFound();
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name", product.CategoryId);
-            ViewData["DiscountId"] = new SelectList(_context.Discount, "Id", "Name", product.DiscountId);
             return View(product);
         }
 
@@ -442,7 +292,6 @@ namespace HungApple.Controllers
                 return NotFound();
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "Id", "Name", product.CategoryId);
-            ViewData["DiscountId"] = new SelectList(_context.Discount, "Id", "Name", product.DiscountId);
             var pathImage = string.Empty;
             if (fileImage != null)
             {
@@ -475,7 +324,6 @@ namespace HungApple.Controllers
                 entity.IsNew = product.IsNew;
                 entity.IsBestSeller = product.IsBestSeller;
                 entity.CategoryId = product.CategoryId;
-                entity.DiscountId = product.DiscountId;
                 entity.IsSale = product.IsSale;
                 _context.Update(entity);
                 await _context.SaveChangesAsync();
@@ -505,7 +353,6 @@ namespace HungApple.Controllers
 
             var product = await _context.Product
                 .Include(p => p.Category)
-                .Include(p => p.Discount)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
